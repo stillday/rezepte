@@ -1,0 +1,39 @@
+services:
+  app:
+    image: ghcr.io/stillday/rezepte:latest
+    container_name: rezepte-app
+    ports:
+      - "3006:3000"
+    environment:
+      MONGO_URI: mongodb://root:${MONGO_PASSWORD}@mongodb:27017/rezepte?authSource=admin
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      AUTH_SECRET: ${AUTH_SECRET}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      BRING_EMAIL: ${BRING_EMAIL}
+      BRING_PASSWORD: ${BRING_PASSWORD}
+      BRING_LIST_UUID: ${BRING_LIST_UUID:-}
+      ORIGIN: https://rezepte.gilneas.at
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:7
+    container_name: rezepte-mongo
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:

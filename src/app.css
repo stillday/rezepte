@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+@theme {
+	--font-baloo: 'Baloo 2', system-ui, sans-serif;
+	--font-nunito: 'Nunito', system-ui, sans-serif;
+
+	--color-primary: #EA580C;
+	--color-primary-light: #FB923C;
+	--color-secondary: #059669;
+	--color-accent: #F59E0B;
+	--color-bg: #FFFBEB;
+	--color-card: #FFFFFF;
+	--color-text: #1C0A00;
+	--color-muted: #78716C;
+	--color-border: #FED7AA;
+}
+
+/* Custom animations */
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(16px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes cart-bounce {
+	0%, 100% { transform: translateY(0) scale(1); }
+	30% { transform: translateY(-8px) scale(1.1); }
+	60% { transform: translateY(-4px) scale(1.05); }
+}
+
+@keyframes toast-in {
+	from {
+		transform: translateY(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
+@keyframes toast-out {
+	from {
+		transform: translateY(0);
+		opacity: 1;
+	}
+	to {
+		transform: translateY(100%);
+		opacity: 0;
+	}
+}
+
+@keyframes wiggle {
+	0%, 100% { transform: rotate(0deg); }
+	25% { transform: rotate(-4deg); }
+	75% { transform: rotate(4deg); }
+}
+
+@keyframes pop-in {
+	0% { transform: scale(0.8); opacity: 0; }
+	70% { transform: scale(1.05); }
+	100% { transform: scale(1); opacity: 1; }
+}
+
+/* Utility classes */
+.font-baloo {
+	font-family: var(--font-baloo);
+}
+
+.font-nunito {
+	font-family: var(--font-nunito);
+}
+
+.animate-fade-up {
+	animation: fade-up 300ms ease-out forwards;
+}
+
+.animate-cart-bounce {
+	animation: cart-bounce 500ms ease-out;
+}
+
+.animate-toast-in {
+	animation: toast-in 300ms ease-out forwards;
+}
+
+.animate-toast-out {
+	animation: toast-out 250ms ease-in forwards;
+}
+
+.animate-wiggle {
+	animation: wiggle 400ms ease-in-out;
+}
+
+.animate-pop-in {
+	animation: pop-in 300ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Recipe card stagger delays */
+.recipe-stagger-1 { animation-delay: 0ms; }
+.recipe-stagger-2 { animation-delay: 60ms; }
+.recipe-stagger-3 { animation-delay: 120ms; }
+.recipe-stagger-4 { animation-delay: 180ms; }
+.recipe-stagger-5 { animation-delay: 240ms; }
+.recipe-stagger-6 { animation-delay: 300ms; }
+
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+}
