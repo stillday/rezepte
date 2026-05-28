@@ -27,10 +27,9 @@
 
 <a
 	href="/recipes/{id}"
-	class="group block bg-white rounded-3xl shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-1 overflow-hidden animate-fade-up opacity-0 {staggerClass} cursor-pointer"
+	class="group block bg-white dark:bg-stone-800 rounded-3xl shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-1 overflow-hidden animate-fade-up opacity-0 {staggerClass} cursor-pointer"
 >
-	<!-- Image or placeholder -->
-	<div class="relative h-44 bg-gradient-to-br from-orange-100 to-amber-50 overflow-hidden">
+	<div class="relative h-44 bg-gradient-to-br from-orange-100 to-amber-50 dark:from-stone-700 dark:to-stone-800 overflow-hidden">
 		{#if imageUrl}
 			<img src={imageUrl} alt={title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
 		{:else}
@@ -39,17 +38,17 @@
 			</div>
 		{/if}
 		{#if prepTime}
-			<div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 text-xs font-semibold text-stone-600 font-nunito">
+			<div class="absolute bottom-2 right-2 bg-white/90 dark:bg-stone-800/90 backdrop-blur-sm rounded-full px-2.5 py-1 text-xs font-semibold text-stone-600 dark:text-stone-300 font-nunito">
 				⏱️ {prepTime} Min
 			</div>
 		{/if}
 	</div>
 
 	<div class="p-4">
-		<h3 class="font-baloo font-bold text-lg text-stone-900 mb-1 line-clamp-1 group-hover:text-orange-600 transition-colors">{title}</h3>
+		<h3 class="font-baloo font-bold text-lg text-stone-900 dark:text-stone-100 mb-1 line-clamp-1 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">{title}</h3>
 
 		{#if description}
-			<p class="text-stone-500 text-sm mb-3 line-clamp-2 font-nunito">{description}</p>
+			<p class="text-stone-500 dark:text-stone-400 text-sm mb-3 line-clamp-2 font-nunito">{description}</p>
 		{/if}
 
 		{#if tags.length > 0}

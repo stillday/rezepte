@@ -8,30 +8,27 @@
 
 {#if !data.session}
 	<div class="min-h-[80vh] flex flex-col items-center justify-center text-center px-4">
-		<!-- Hero illustration -->
 		<div class="text-8xl mb-6 animate-pop-in">🍳</div>
 
-		<h1 class="font-baloo font-extrabold text-4xl sm:text-5xl text-stone-900 mb-3">
+		<h1 class="font-baloo font-extrabold text-4xl sm:text-5xl text-stone-900 dark:text-stone-100 mb-3">
 			Unsere <span class="text-orange-500">Rezepte</span>
 		</h1>
-		<p class="text-stone-500 font-nunito text-lg max-w-md mb-8">
+		<p class="text-stone-500 dark:text-stone-400 font-nunito text-lg max-w-md mb-8">
 			Familienrezepte verwalten, gesund kochen und direkt zur Einkaufsliste hinzufügen.
 		</p>
 
-		<!-- Feature pills -->
 		<div class="flex flex-wrap justify-center gap-2 mb-10">
-			<span class="px-3 py-1.5 bg-pink-100 text-pink-700 rounded-full text-sm font-semibold">❤️ Kinderfreundlich</span>
-			<span class="px-3 py-1.5 bg-orange-100 text-orange-700 rounded-full text-sm font-semibold">🌡️ Air Fryer</span>
-			<span class="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-semibold">🍚 Reiskocher</span>
-			<span class="px-3 py-1.5 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold">⚡ Schnell</span>
-			<span class="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">💧 Wenig Kalorien</span>
+			<span class="px-3 py-1.5 bg-pink-100 dark:bg-pink-900/30 text-pink-700 dark:text-pink-400 rounded-full text-sm font-semibold">❤️ Kinderfreundlich</span>
+			<span class="px-3 py-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full text-sm font-semibold">🌡️ Air Fryer</span>
+			<span class="px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-sm font-semibold">🍚 Reiskocher</span>
+			<span class="px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-full text-sm font-semibold">⚡ Schnell</span>
+			<span class="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-semibold">💧 Wenig Kalorien</span>
 		</div>
 
-		<!-- Login -->
 		<form action="/auth/signin/google" method="post">
 			<button
 				type="submit"
-				class="inline-flex items-center gap-3 bg-white border-2 border-orange-200 hover:border-orange-400 text-stone-700 font-baloo font-bold px-8 py-4 rounded-2xl shadow-md hover:shadow-lg active:scale-95 transition-all duration-150 cursor-pointer text-lg"
+				class="inline-flex items-center gap-3 bg-white dark:bg-stone-800 border-2 border-orange-200 dark:border-stone-600 hover:border-orange-400 dark:hover:border-orange-500 text-stone-700 dark:text-stone-200 font-baloo font-bold px-8 py-4 rounded-2xl shadow-md hover:shadow-lg active:scale-95 transition-all duration-150 cursor-pointer text-lg"
 			>
 				<svg class="w-6 h-6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 					<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -43,7 +40,6 @@
 			</button>
 		</form>
 
-		<p class="mt-4 text-xs text-stone-400 font-nunito">Jeder Benutzer sieht nur seine eigenen Rezepte.</p>
+		<p class="mt-4 text-xs text-stone-400 dark:text-stone-500 font-nunito">Jeder Benutzer sieht nur seine eigenen Rezepte.</p>
 	</div>
 {/if}
-

@@ -29,7 +29,6 @@
 	}
 
 	async function handleImport(recipe: object) {
-		// Save the imported recipe and redirect to edit
 		const res = await fetch('/api/recipes', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
@@ -44,11 +43,10 @@
 	<title>Meine Rezepte</title>
 </svelte:head>
 
-<!-- Header -->
 <div class="flex items-center justify-between mb-6">
 	<div>
-		<h1 class="font-baloo font-extrabold text-3xl text-stone-900">Meine Rezepte</h1>
-		<p class="text-stone-400 font-nunito text-sm">{data.recipes.length} Rezepte gespeichert</p>
+		<h1 class="font-baloo font-extrabold text-3xl text-stone-900 dark:text-stone-100">Meine Rezepte</h1>
+		<p class="text-stone-400 dark:text-stone-500 font-nunito text-sm">{data.recipes.length} Rezepte gespeichert</p>
 	</div>
 	<button
 		onclick={() => (showImportModal = true)}
@@ -59,7 +57,6 @@
 	</button>
 </div>
 
-<!-- Filter -->
 <div class="mb-6">
 	<FilterBar
 		{search}
@@ -71,15 +68,14 @@
 	/>
 </div>
 
-<!-- Recipe Grid -->
 {#if filtered.length === 0}
 	<div class="text-center py-16">
 		<div class="text-6xl mb-4">🍽️</div>
-		<p class="font-baloo font-bold text-xl text-stone-400">
+		<p class="font-baloo font-bold text-xl text-stone-400 dark:text-stone-500">
 			{data.recipes.length === 0 ? 'Noch keine Rezepte' : 'Keine Treffer'}
 		</p>
 		{#if data.recipes.length === 0}
-			<p class="text-stone-400 font-nunito text-sm mt-2">Füge dein erstes Rezept hinzu!</p>
+			<p class="text-stone-400 dark:text-stone-500 font-nunito text-sm mt-2">Füge dein erstes Rezept hinzu!</p>
 			<button
 				onclick={() => (showImportModal = true)}
 				class="mt-4 bg-orange-500 text-white font-baloo font-bold px-6 py-2.5 rounded-2xl hover:bg-orange-600 active:scale-95 transition-all cursor-pointer"

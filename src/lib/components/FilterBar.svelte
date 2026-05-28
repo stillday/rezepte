@@ -27,8 +27,7 @@
 	];
 </script>
 
-<div class="bg-white rounded-3xl shadow-sm border border-orange-100 p-4 space-y-4">
-	<!-- Search -->
+<div class="bg-white dark:bg-stone-800 rounded-3xl shadow-sm border border-orange-100 dark:border-stone-700 p-4 space-y-4">
 	<div class="relative">
 		<span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none">🔍</span>
 		<input
@@ -36,11 +35,10 @@
 			value={search}
 			oninput={(e) => onsearchchange((e.target as HTMLInputElement).value)}
 			placeholder="Rezept suchen…"
-			class="w-full pl-10 pr-4 py-2.5 bg-amber-50 border border-orange-100 rounded-2xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 transition-all"
+			class="w-full pl-10 pr-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500 transition-all"
 		/>
 	</div>
 
-	<!-- Tags -->
 	<div class="flex flex-wrap gap-2">
 		{#each allTags as tag}
 			<button
@@ -48,23 +46,22 @@
 				class="px-3 py-1.5 rounded-full text-sm font-semibold font-nunito transition-all duration-150 active:scale-95 cursor-pointer
 				{activeTags.includes(tag.key)
 					? 'bg-orange-500 text-white shadow-sm'
-					: 'bg-amber-50 text-stone-600 hover:bg-orange-100 border border-orange-100'}"
+					: 'bg-amber-50 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-orange-100 dark:hover:bg-stone-600 border border-orange-100 dark:border-stone-600'}"
 			>
 				{tag.label}
 			</button>
 		{/each}
 	</div>
 
-	<!-- Calories -->
 	<div class="flex flex-wrap gap-2 items-center">
-		<span class="text-xs font-semibold text-stone-400 font-nunito uppercase tracking-wide">Kalorien:</span>
+		<span class="text-xs font-semibold text-stone-400 dark:text-stone-500 font-nunito uppercase tracking-wide">Kalorien:</span>
 		{#each calorieOptions as opt}
 			<button
 				onclick={() => oncalorieschange(opt.value)}
 				class="px-3 py-1 rounded-full text-xs font-semibold font-nunito transition-all duration-150 active:scale-95 cursor-pointer
 				{maxCalories === opt.value
 					? 'bg-orange-500 text-white'
-					: 'bg-amber-50 text-stone-500 hover:bg-orange-100 border border-orange-100'}"
+					: 'bg-amber-50 dark:bg-stone-700 text-stone-500 dark:text-stone-400 hover:bg-orange-100 dark:hover:bg-stone-600 border border-orange-100 dark:border-stone-600'}"
 			>
 				{opt.label}
 			</button>

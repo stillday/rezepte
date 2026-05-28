@@ -15,6 +15,12 @@
 	--color-border: #FED7AA;
 }
 
+@variant dark (&:where(.dark, .dark *));
+
+.dark {
+	color-scheme: dark;
+}
+
 /* Custom animations */
 @keyframes fade-up {
 	from {

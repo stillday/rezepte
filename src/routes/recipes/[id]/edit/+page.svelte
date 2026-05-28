@@ -81,45 +81,43 @@
 	<title>{title || 'Rezept bearbeiten'}</title>
 </svelte:head>
 
-<a href="/recipes/{recipeId}" class="inline-flex items-center gap-2 text-stone-400 hover:text-orange-600 font-nunito text-sm mb-6 transition-colors">
+<a href="/recipes/{recipeId}" class="inline-flex items-center gap-2 text-stone-400 hover:text-orange-600 dark:hover:text-orange-400 font-nunito text-sm mb-6 transition-colors">
 	← Zurück
 </a>
 
 <div class="space-y-5 pb-10">
-	<h1 class="font-baloo font-extrabold text-2xl text-stone-900">Rezept bearbeiten</h1>
+	<h1 class="font-baloo font-extrabold text-2xl text-stone-900 dark:text-stone-100">Rezept bearbeiten</h1>
 
-	<!-- Basic info -->
-	<div class="bg-white rounded-3xl shadow-md p-5 space-y-4">
-		<h2 class="font-baloo font-bold text-lg">Grundinfo</h2>
+	<div class="bg-white dark:bg-stone-800 rounded-3xl shadow-md p-5 space-y-4">
+		<h2 class="font-baloo font-bold text-lg text-stone-900 dark:text-stone-100">Grundinfo</h2>
 		<div>
-			<label class="block text-sm font-semibold text-stone-600 mb-1.5 font-nunito">Titel *</label>
-			<input bind:value={title} type="text" placeholder="Spaghetti Bolognese" class="w-full px-4 py-2.5 bg-amber-50 border border-orange-100 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300" />
+			<label class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Titel *</label>
+			<input bind:value={title} type="text" placeholder="Spaghetti Bolognese" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
 		</div>
 		<div>
-			<label class="block text-sm font-semibold text-stone-600 mb-1.5 font-nunito">Beschreibung</label>
-			<textarea bind:value={description} rows="2" placeholder="Kurze Beschreibung…" class="w-full px-4 py-2.5 bg-amber-50 border border-orange-100 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 resize-none"></textarea>
+			<label class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Beschreibung</label>
+			<textarea bind:value={description} rows="2" placeholder="Kurze Beschreibung…" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500 resize-none"></textarea>
 		</div>
 		<div class="grid grid-cols-2 gap-3">
 			<div>
-				<label class="block text-sm font-semibold text-stone-600 mb-1.5 font-nunito">Portionen</label>
-				<input bind:value={servings} type="number" min="1" class="w-full px-4 py-2.5 bg-amber-50 border border-orange-100 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300" />
+				<label class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Portionen</label>
+				<input bind:value={servings} type="number" min="1" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
 			</div>
 			<div>
-				<label class="block text-sm font-semibold text-stone-600 mb-1.5 font-nunito">⏱️ Zeit (Min)</label>
-				<input bind:value={prepTime} type="number" min="1" placeholder="30" class="w-full px-4 py-2.5 bg-amber-50 border border-orange-100 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300" />
+				<label class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">⏱️ Zeit (Min)</label>
+				<input bind:value={prepTime} type="number" min="1" placeholder="30" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
 			</div>
 		</div>
 	</div>
 
-	<!-- Tags -->
-	<div class="bg-white rounded-3xl shadow-md p-5 space-y-3">
-		<h2 class="font-baloo font-bold text-lg">Tags</h2>
+	<div class="bg-white dark:bg-stone-800 rounded-3xl shadow-md p-5 space-y-3">
+		<h2 class="font-baloo font-bold text-lg text-stone-900 dark:text-stone-100">Tags</h2>
 		<div class="flex flex-wrap gap-2">
 			{#each availableTags as t}
 				<button
 					onclick={() => toggleTag(t.key)}
 					class="px-3 py-1.5 rounded-full text-sm font-semibold font-nunito transition-all active:scale-95 cursor-pointer
-					{tags.includes(t.key) ? 'bg-orange-500 text-white' : 'bg-amber-50 text-stone-600 border border-orange-100 hover:bg-orange-100'}"
+					{tags.includes(t.key) ? 'bg-orange-500 text-white' : 'bg-amber-50 dark:bg-stone-700 text-stone-600 dark:text-stone-300 border border-orange-100 dark:border-stone-600 hover:bg-orange-100 dark:hover:bg-stone-600'}"
 				>
 					{t.label}
 				</button>
@@ -127,13 +125,12 @@
 		</div>
 	</div>
 
-	<!-- Nutrition -->
-	<div class="bg-white rounded-3xl shadow-md p-5 space-y-3">
-		<h2 class="font-baloo font-bold text-lg">🔥 Nährwerte pro Portion</h2>
+	<div class="bg-white dark:bg-stone-800 rounded-3xl shadow-md p-5 space-y-3">
+		<h2 class="font-baloo font-bold text-lg text-stone-900 dark:text-stone-100">🔥 Nährwerte pro Portion</h2>
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
 			{#each [['calories', '🔥 kcal', calories], ['fat', '🫒 Fett g', fat], ['sugar', '🍬 Zucker g', sugar], ['protein', '💪 Protein g', protein]] as [key, label, val]}
 				<div>
-					<label class="block text-xs font-semibold text-stone-500 mb-1 font-nunito">{label}</label>
+					<label class="block text-xs font-semibold text-stone-500 dark:text-stone-400 mb-1 font-nunito">{label}</label>
 					<input
 						type="number" min="0"
 						value={val}
@@ -145,50 +142,47 @@
 							else if (key === 'sugar') sugar = n;
 							else if (key === 'protein') protein = n;
 						}}
-						class="w-full px-3 py-2 bg-amber-50 border border-orange-100 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300"
+						class="w-full px-3 py-2 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 border border-orange-100 dark:border-stone-600 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500"
 					/>
 				</div>
 			{/each}
 		</div>
 	</div>
 
-	<!-- Ingredients -->
-	<div class="bg-white rounded-3xl shadow-md p-5 space-y-3">
-		<h2 class="font-baloo font-bold text-lg">🛒 Zutaten</h2>
+	<div class="bg-white dark:bg-stone-800 rounded-3xl shadow-md p-5 space-y-3">
+		<h2 class="font-baloo font-bold text-lg text-stone-900 dark:text-stone-100">🛒 Zutaten</h2>
 		{#each ingredients as ing, i}
 			<div class="flex gap-2 items-center">
-				<input bind:value={ing.amount} type="text" placeholder="200" class="w-20 px-3 py-2 bg-amber-50 border border-orange-100 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300" />
-				<input bind:value={ing.unit} type="text" placeholder="g" class="w-16 px-3 py-2 bg-amber-50 border border-orange-100 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300" />
-				<input bind:value={ing.name} type="text" placeholder="Mehl" class="flex-1 px-3 py-2 bg-amber-50 border border-orange-100 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300" />
+				<input bind:value={ing.amount} type="text" placeholder="200" class="w-20 px-3 py-2 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
+				<input bind:value={ing.unit} type="text" placeholder="g" class="w-16 px-3 py-2 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
+				<input bind:value={ing.name} type="text" placeholder="Mehl" class="flex-1 px-3 py-2 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
 				<button onclick={() => removeIngredient(i)} class="text-red-300 hover:text-red-500 transition-colors cursor-pointer text-lg">×</button>
 			</div>
 		{/each}
-		<button onclick={addIngredient} class="text-sm text-orange-500 hover:text-orange-600 font-semibold font-nunito cursor-pointer transition-colors">
+		<button onclick={addIngredient} class="text-sm text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 font-semibold font-nunito cursor-pointer transition-colors">
 			+ Zutat hinzufügen
 		</button>
 	</div>
 
-	<!-- Steps -->
-	<div class="bg-white rounded-3xl shadow-md p-5 space-y-3">
-		<h2 class="font-baloo font-bold text-lg">👨‍🍳 Zubereitung</h2>
+	<div class="bg-white dark:bg-stone-800 rounded-3xl shadow-md p-5 space-y-3">
+		<h2 class="font-baloo font-bold text-lg text-stone-900 dark:text-stone-100">👨‍🍳 Zubereitung</h2>
 		{#each steps as step, i}
 			<div class="flex gap-3 items-start">
-				<span class="shrink-0 w-7 h-7 rounded-full bg-orange-100 text-orange-700 font-baloo font-bold text-sm flex items-center justify-center mt-2">{i + 1}</span>
+				<span class="shrink-0 w-7 h-7 rounded-full bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400 font-baloo font-bold text-sm flex items-center justify-center mt-2">{i + 1}</span>
 				<textarea
 					bind:value={steps[i]}
 					rows="2"
 					placeholder="Schritt beschreiben…"
-					class="flex-1 px-3 py-2 bg-amber-50 border border-orange-100 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 resize-none"
+					class="flex-1 px-3 py-2 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500 resize-none"
 				></textarea>
 				<button onclick={() => removeStep(i)} class="text-red-300 hover:text-red-500 mt-2 cursor-pointer text-lg transition-colors">×</button>
 			</div>
 		{/each}
-		<button onclick={addStep} class="text-sm text-orange-500 hover:text-orange-600 font-semibold font-nunito cursor-pointer transition-colors">
+		<button onclick={addStep} class="text-sm text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 font-semibold font-nunito cursor-pointer transition-colors">
 			+ Schritt hinzufügen
 		</button>
 	</div>
 
-	<!-- Save -->
 	<button
 		onclick={save}
 		disabled={saving || !title.trim()}
