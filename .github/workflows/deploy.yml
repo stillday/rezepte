@@ -54,7 +54,7 @@ jobs:
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             AUTH_SECRET=${{ secrets.AUTH_SECRET }}
-            ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
+            GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
             BRING_EMAIL=${{ secrets.BRING_EMAIL }}
             BRING_PASSWORD=${{ secrets.BRING_PASSWORD }}
             BRING_LIST_UUID=${{ secrets.BRING_LIST_UUID }}
