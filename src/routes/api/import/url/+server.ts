@@ -1,6 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import Anthropic from '@anthropic-ai/sdk';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { env } from '$env/dynamic/private';
 
 const PROMPT = `Extrahiere das Rezept aus diesem Webseiteninhalt und gib NUR gültiges JSON zurück (kein Markdown, kein Text davor/danach):
@@ -37,14 +37,10 @@ export const POST: RequestHandler = async (event) => {
 		throw error(400, 'Seite konnte nicht geladen werden');
 	}
 
-	const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
-	const msg = await client.messages.create({
-		model: 'claude-sonnet-4-6',
-		max_tokens: 2048,
-		messages: [{ role: 'user', content: `${PROMPT}\n\nInhalt:\n${pageText}` }]
-	});
-
-	const text = msg.content[0].type === 'text' ? msg.content[0].text : '';
+	const genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY!);
+	const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+	const result = await model.generateContent(`${PROMPT}\n\nInhalt:\n${pageText}`);
+	const text = result.response.text();
 	const jsonMatch = text.match(/\{[\s\S]*\}/);
 	if (!jsonMatch) throw error(422, 'Kein Rezept gefunden');
 
