@@ -1,18 +1,12 @@
 <script lang="ts">
 	let { data } = $props();
-
-	if (data.session) {
-		// client-side redirect if already logged in
-	}
 </script>
 
 <svelte:head>
 	<title>Rezepte — Familienrezepte</title>
 </svelte:head>
 
-{#if data.session}
-	<script>window.location.href = '/recipes'</script>
-{:else}
+{#if !data.session}
 	<div class="min-h-[80vh] flex flex-col items-center justify-center text-center px-4">
 		<!-- Hero illustration -->
 		<div class="text-8xl mb-6 animate-pop-in">🍳</div>
@@ -52,3 +46,4 @@
 		<p class="mt-4 text-xs text-stone-400 font-nunito">Jeder Benutzer sieht nur seine eigenen Rezepte.</p>
 	</div>
 {/if}
+

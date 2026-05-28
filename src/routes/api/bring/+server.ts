@@ -4,18 +4,25 @@ import { connectMongoose } from '$lib/server/mongoose';
 import { Recipe } from '$lib/server/models/Recipe';
 import { Pantry } from '$lib/server/models/Pantry';
 import { env } from '$env/dynamic/private';
+import { isValidObjectId } from 'mongoose';
 
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const Bring = require('bring-shopping');
 
+let bringCache: { client: unknown; expiresAt: number } | null = null;
+
 async function getBringClient() {
 	if (!env.BRING_EMAIL || !env.BRING_PASSWORD) {
-		throw new Error('Bring! Zugangsdaten fehlen (BRING_EMAIL / BRING_PASSWORD)');
+		throw new Error('Bring! Zugangsdaten nicht konfiguriert');
+	}
+	if (bringCache && bringCache.expiresAt > Date.now()) {
+		return bringCache.client;
 	}
 	const bring = new Bring({ mail: env.BRING_EMAIL, password: env.BRING_PASSWORD });
 	await bring.login();
+	bringCache = { client: bring, expiresAt: Date.now() + 30 * 60 * 1000 };
 	return bring;
 }
 
@@ -24,7 +31,7 @@ export const POST: RequestHandler = async (event) => {
 	if (!session?.user?.id) throw error(401, 'Unauthorized');
 
 	const { recipeId } = await event.request.json();
-	if (!recipeId) throw error(400, 'recipeId fehlt');
+	if (!recipeId || !isValidObjectId(recipeId)) throw error(400, 'Ungültige recipeId');
 
 	await connectMongoose();
 
@@ -38,10 +45,11 @@ export const POST: RequestHandler = async (event) => {
 	const pantryNames: Set<string> = new Set(
 		(pantry?.items ?? []).map((i: { name: string }) => i.name.toLowerCase().trim())
 	);
+	const pantryArr = Array.from(pantryNames);
 
 	const toAdd = (recipe.ingredients ?? []).filter((ing: { name: string }) => {
 		const name = ing.name.toLowerCase().trim();
-		return !pantryNames.has(name) && !Array.from(pantryNames).some((p: string) => name.includes(p) || p.includes(name));
+		return !pantryNames.has(name) && !pantryArr.some((p) => name.includes(p) || p.includes(name));
 	});
 
 	if (toAdd.length === 0) {
@@ -49,22 +57,23 @@ export const POST: RequestHandler = async (event) => {
 	}
 
 	try {
-		const bring = await getBringClient();
-		const listsResponse = await bring.loadLists();
-		const lists = listsResponse?.lists ?? [];
-
-		if (lists.length === 0) throw new Error('Keine Bring! Liste gefunden');
+		const bring = await getBringClient() as { loadLists: () => Promise<{ lists: { listUuid: string }[] }>; saveItem: (uuid: string, name: string, spec: string) => Promise<void> };
+		const { lists } = await bring.loadLists();
+		if (lists.length === 0) throw new Error('Keine Liste gefunden');
 
 		const listUuid = env.BRING_LIST_UUID || lists[0].listUuid;
 
 		for (const ing of toAdd) {
-			const spec = [ing.amount, ing.unit].filter(Boolean).join(' ').trim();
-			await bring.saveItem(listUuid, ing.name, spec);
+			const spec = [ing.amount, ing.unit]
+				.filter(Boolean)
+				.join(' ')
+				.trim()
+				.slice(0, 100);
+			await bring.saveItem(listUuid, ing.name.slice(0, 100), spec);
 		}
 
 		return json({ added: toAdd.length, items: toAdd.map((i: { name: string }) => i.name) });
-	} catch (e) {
-		const msg = e instanceof Error ? e.message : 'Bring! Fehler';
-		throw error(502, msg);
+	} catch {
+		throw error(502, 'Bring! nicht erreichbar — bitte erneut versuchen');
 	}
 };

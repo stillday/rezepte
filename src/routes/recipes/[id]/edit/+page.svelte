@@ -2,37 +2,23 @@
 	import TagChip from '$lib/components/TagChip.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
-
 	let { data } = $props();
-	const recipeId = $derived($page.params.id);
-	const r = $derived(data.recipe);
+	const recipeId = $derived(data.recipe.id);
+	const r = data.recipe;
 
-	let title = $state('');
-	let description = $state('');
-	let servings = $state(4);
-	let prepTime = $state<number | ''>('');
-	let tags = $state<string[]>([]);
-	let ingredients = $state<{ name: string; amount: string; unit: string }[]>([]);
-	let steps = $state<string[]>([]);
-	let calories = $state<number | ''>('');
-	let fat = $state<number | ''>('');
-	let sugar = $state<number | ''>('');
-	let protein = $state<number | ''>('');
-
-	$effect(() => {
-		title = r.title ?? '';
-		description = r.description ?? '';
-		servings = r.servings ?? 4;
-		prepTime = r.prepTime ?? '';
-		tags = [...(r.tags ?? [])];
-		ingredients = r.ingredients?.length ? [...r.ingredients] : [{ name: '', amount: '', unit: '' }];
-		steps = r.steps?.length ? [...r.steps] : [''];
-		calories = r.nutrition?.calories ?? '';
-		fat = r.nutrition?.fat ?? '';
-		sugar = r.nutrition?.sugar ?? '';
-		protein = r.nutrition?.protein ?? '';
-	});
+	let title = $state(r.title ?? '');
+	let description = $state(r.description ?? '');
+	let servings = $state(r.servings ?? 4);
+	let prepTime = $state<number | ''>(r.prepTime ?? '');
+	let tags = $state<string[]>([...(r.tags ?? [])]);
+	let ingredients = $state<{ name: string; amount: string; unit: string }[]>(
+		r.ingredients?.length ? [...r.ingredients] : [{ name: '', amount: '', unit: '' }]
+	);
+	let steps = $state<string[]>(r.steps?.length ? [...r.steps] : ['']);
+	let calories = $state<number | ''>(r.nutrition?.calories ?? '');
+	let fat = $state<number | ''>(r.nutrition?.fat ?? '');
+	let sugar = $state<number | ''>(r.nutrition?.sugar ?? '');
+	let protein = $state<number | ''>(r.nutrition?.protein ?? '');
 	let saving = $state(false);
 
 	const availableTags = [

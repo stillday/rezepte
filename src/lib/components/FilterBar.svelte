@@ -15,7 +15,8 @@
 		{ key: 'quick', label: '⚡ Schnell' },
 		{ key: 'airfryer', label: '🌡️ Air Fryer' },
 		{ key: 'ricecooker', label: '🍚 Reiskocher' },
-		{ key: 'lowcal', label: '💧 Wenig Kalorien' }
+		{ key: 'lowcal', label: '💧 Wenig Kalorien' },
+		{ key: 'lowsugar', label: '🍃 Wenig Zucker' }
 	];
 
 	const calorieOptions = [

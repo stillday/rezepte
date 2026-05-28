@@ -32,7 +32,7 @@
 <div class="space-y-6">
 	<!-- Header card -->
 	<div class="bg-white rounded-3xl shadow-md overflow-hidden animate-pop-in">
-		{#if r.imageUrl}
+		{#if r.imageUrl?.startsWith('http')}
 			<img src={r.imageUrl} alt={r.title} class="w-full h-56 object-cover" />
 		{:else}
 			<div class="w-full h-36 bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center">
@@ -65,7 +65,7 @@
 				{#if r.servings}
 					<span class="flex items-center gap-1">👥 {r.servings} Portionen</span>
 				{/if}
-				{#if r.sourceUrl}
+				{#if r.sourceUrl?.startsWith('http')}
 					<a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" class="flex items-center gap-1 text-orange-500 hover:text-orange-600">
 						🔗 Quelle
 					</a>

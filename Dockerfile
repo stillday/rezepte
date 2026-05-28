@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN printf 'GOOGLE_CLIENT_ID=build\nGOOGLE_CLIENT_SECRET=build\nAUTH_SECRET=build\nMONGO_URI=mongodb://localhost:27017/rezepte\nANTHROPIC_API_KEY=build\nBRING_EMAIL=build\nBRING_PASSWORD=build\n' > .env
+RUN printf 'GOOGLE_CLIENT_ID=build\nGOOGLE_CLIENT_SECRET=build\nAUTH_SECRET=build\nMONGO_URI=mongodb://localhost:27017/rezepte\nGEMINI_API_KEY=build\nBRING_EMAIL=build\nBRING_PASSWORD=build\n' > .env
 RUN npm run build
 RUN npm prune --production
 

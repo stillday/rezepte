@@ -1,10 +1,13 @@
 import mongoose from 'mongoose';
 import { env } from '$env/dynamic/private';
 
-const g = globalThis as typeof globalThis & { _mongooseConnected?: boolean };
+let connectionPromise: Promise<typeof mongoose> | null = null;
 
-export async function connectMongoose() {
-	if (g._mongooseConnected || mongoose.connection.readyState === 1) return;
-	await mongoose.connect(env.MONGO_URI as string);
-	g._mongooseConnected = true;
+export function connectMongoose(): Promise<typeof mongoose> | Promise<void> {
+	if (mongoose.connection.readyState === 1) return Promise.resolve();
+	if (!connectionPromise) {
+		connectionPromise = mongoose.connect(env.MONGO_URI as string);
+		connectionPromise.catch(() => { connectionPromise = null; });
+	}
+	return connectionPromise;
 }
