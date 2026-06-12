@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#FFFBEB"/>
+  <!-- Pfanne -->
+  <circle cx="29" cy="33" r="17" fill="#3F3F46"/>
+  <circle cx="29" cy="33" r="13" fill="#52525B"/>
+  <!-- Griff -->
+  <rect x="44" y="29.5" width="20" height="7" rx="3.5" transform="rotate(20 44 33)" fill="#3F3F46"/>
+  <!-- Spiegelei -->
+  <ellipse cx="29" cy="33" rx="10" ry="9" fill="#FFFFFF"/>
+  <circle cx="30" cy="33" r="5" fill="#EA580C"/>
+</svg>

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import ImportModal from '$lib/components/ImportModal.svelte';
+	import { addToast } from '$lib/stores/toast.svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 
-	const isManual = $derived($page.url.searchParams.get('manual') === '1');
-	let showModal = $state(!isManual);
+	// Der ?manual=1-Fall wird serverseitig (+page.server.ts) per Redirect erledigt.
+	// Hier landet nur der Import-Flow (Link/Foto).
+	let showModal = $state(true);
 
 	async function handleImport(recipe: object) {
 		const res = await fetch('/api/recipes', {
@@ -13,24 +14,12 @@
 			body: JSON.stringify(recipe)
 		});
 		const data = await res.json();
-		if (data.id) goto(`/recipes/${data.id}/edit`);
+		if (data.id) {
+			goto(`/recipes/${data.id}/edit`);
+		} else {
+			addToast(data.message || 'Rezept konnte nicht gespeichert werden', 'error');
+		}
 	}
 </script>
-
-{#if isManual}
-	{@const emptyRecipe = {
-		title: '', description: '', servings: 4, prepTime: undefined,
-		tags: [], ingredients: [], steps: [], nutrition: {}
-	}}
-	<script>
-		// redirect to edit with empty recipe
-	</script>
-	<!-- Redirect to create empty recipe then edit -->
-	{#await fetch('/api/recipes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'Neues Rezept' }) }).then(r => r.json()) then data}
-		{#if data.id}
-			{@const _ = goto(`/recipes/${data.id}/edit`)}
-		{/if}
-	{/await}
-{/if}
 
 <ImportModal open={showModal} onclose={() => goto('/recipes')} onimport={handleImport} />

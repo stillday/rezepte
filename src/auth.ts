@@ -15,5 +15,11 @@ export const { handle: authHandle, signIn, signOut } = SvelteKitAuth({
 	],
 	adapter: MongoDBAdapter(clientPromise),
 	trustHost: true,
-	secret: AUTH_SECRET
+	secret: AUTH_SECRET,
+	callbacks: {
+		session({ session, user }) {
+			session.user.id = user.id;
+			return session;
+		}
+	}
 });
