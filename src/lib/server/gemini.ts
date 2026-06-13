@@ -26,7 +26,9 @@ ${RECIPE_SCHEMA}
 Tags nur setzen wenn wirklich passend. Nährwerte pro Portion schätzen wenn nicht im Bild.`;
 
 export function getGeminiModel() {
-	return new GoogleGenerativeAI(env.GEMINI_API_KEY!).getGenerativeModel({ model: 'gemini-2.0-flash' });
+	// Modell per Env überschreibbar — falls Google ein Modell abschaltet, ohne Code-Deploy umstellbar.
+	const model = env.GEMINI_MODEL || 'gemini-2.5-flash';
+	return new GoogleGenerativeAI(env.GEMINI_API_KEY!).getGenerativeModel({ model });
 }
 
 export function parseRecipeJson(text: string): Record<string, unknown> {

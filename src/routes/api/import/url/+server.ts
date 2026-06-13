@@ -3,8 +3,9 @@ import type { RequestHandler } from './$types';
 import dnsp from 'node:dns/promises';
 import dns from 'node:dns';
 import net from 'node:net';
-import { request, Agent } from 'undici';
+import { fetch as undiciFetch, Agent, buildConnector } from 'undici';
 import { getGeminiModel, URL_PROMPT, parseRecipeJson } from '$lib/server/gemini';
+import { extractJsonLdRecipe } from '$lib/server/recipeJsonLd';
 
 function isPrivateIp(ip: string): boolean {
 	// IPv4-mapped IPv6 (::ffff:127.0.0.1) auf die v4-Adresse reduzieren
@@ -37,46 +38,32 @@ async function validatePublicUrl(rawUrl: string): Promise<string> {
 	return rawUrl;
 }
 
-// Dispatcher mit eigenem DNS-Lookup: prüft die aufgelöste IP an der tatsächlichen Connection.
-// Schließt das DNS-Rebinding-Fenster zwischen validatePublicUrl und dem echten Connect.
-// (undici erzwingt all:true und erwartet das Adress-Array im Callback.)
-const ssrfAgent = new Agent({
-	connect: {
-		lookup(hostname, _options, callback) {
-			dns.lookup(hostname, { all: true, verbatim: true }, (err, addresses) => {
-				if (err) return callback(err, []);
-				const list = addresses as dns.LookupAddress[];
-				if (list.length === 0 || list.some((a) => isPrivateIp(a.address))) {
-					return callback(new Error('SSRF: nicht-öffentliche Adresse blockiert'), []);
-				}
-				callback(null, list);
-			});
-		}
+// SSRF-sicherer Dispatcher für den Seitenabruf:
+// - lookup() validiert die aufgelöste IP an der echten Connection → schützt vor DNS-Rebinding
+//   und vor Redirects auf einen Host, der intern auflöst (greift auf JEDEM Hop von redirect:'follow').
+// - der connect-Wrapper blockt zusätzlich literale interne IPs (für IP-Hosts wird lookup übersprungen),
+//   also auch Redirects direkt auf z.B. http://169.254.169.254/.
+const baseConnector = buildConnector({
+	lookup(hostname, _options, callback) {
+		dns.lookup(hostname, { all: true, verbatim: true }, (err, addresses) => {
+			if (err) return callback(err, []);
+			const list = addresses as dns.LookupAddress[];
+			if (list.length === 0 || list.some((a) => isPrivateIp(a.address))) {
+				return callback(new Error('SSRF: nicht-öffentliche Adresse blockiert'), []);
+			}
+			callback(null, list);
+		});
 	}
 });
 
-// Folgt Redirects manuell (undici.request liefert Status + Location, anders als fetch's
-// opaqueredirect) und validiert jeden Hop neu — blockt auch Redirects auf literale interne IPs.
-async function fetchSafe(startUrl: string, signal: AbortSignal): Promise<string> {
-	let currentUrl = startUrl;
-	for (let hop = 0; hop < 5; hop++) {
-		// undici.request folgt standardmäßig KEINEN Redirects → wir lesen Location selbst.
-		const res = await request(currentUrl, {
-			method: 'GET',
-			headers: { 'user-agent': 'Mozilla/5.0', accept: 'text/html' },
-			dispatcher: ssrfAgent,
-			signal
-		});
-		if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-			await res.body.dump();
-			const loc = Array.isArray(res.headers.location) ? res.headers.location[0] : res.headers.location;
-			currentUrl = await validatePublicUrl(new URL(loc, currentUrl).toString());
-			continue;
+const ssrfAgent = new Agent({
+	connect(options, callback) {
+		if (options.hostname && net.isIP(options.hostname) && isPrivateIp(options.hostname)) {
+			return callback(new Error('SSRF: nicht-öffentliche IP blockiert'), null);
 		}
-		return res.body.text();
+		return baseConnector(options, callback);
 	}
-	throw error(400, 'Zu viele Weiterleitungen');
-}
+});
 
 export const POST: RequestHandler = async (event) => {
 	const session = await event.locals.auth();
@@ -87,27 +74,42 @@ export const POST: RequestHandler = async (event) => {
 
 	const safeUrl = await validatePublicUrl(url);
 
-	let pageText: string;
+	let html: string;
 	try {
 		const controller = new AbortController();
 		const timeout = setTimeout(() => controller.abort(), 10_000);
-		let html: string;
 		try {
-			html = await fetchSafe(safeUrl, controller.signal);
+			// undici.fetch dekomprimiert gzip/br automatisch; redirect:'follow' ist sicher,
+			// weil der ssrfAgent jeden (Redirect-)Connect IP-validiert.
+			const res = await undiciFetch(safeUrl, {
+				headers: { 'user-agent': 'Mozilla/5.0' },
+				signal: controller.signal,
+				redirect: 'follow',
+				dispatcher: ssrfAgent
+			});
+			html = await res.text();
 		} finally {
 			clearTimeout(timeout);
 		}
-		pageText = html
-			.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-			.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-			.replace(/<[^>]+>/g, ' ')
-			.replace(/\s+/g, ' ')
-			.trim()
-			.slice(0, 12000);
 	} catch (e) {
 		if (isHttpError(e)) throw e; // z.B. SSRF-Block aus validatePublicUrl bei Redirect
 		throw error(400, 'Seite konnte nicht geladen werden');
 	}
+
+	// 1. Schneller, kostenloser Weg: strukturierte Daten (schema.org/Recipe) — ohne KI.
+	const structured = extractJsonLdRecipe(html);
+	if (structured) {
+		return json({ ...structured, sourceUrl: safeUrl });
+	}
+
+	// 2. Fallback: KI-Extraktion aus dem Seitentext.
+	const pageText = html
+		.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
+		.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
+		.replace(/<[^>]+>/g, ' ')
+		.replace(/\s+/g, ' ')
+		.trim()
+		.slice(0, 12000);
 
 	try {
 		const model = getGeminiModel();
