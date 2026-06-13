@@ -2,9 +2,10 @@
 	import TagChip from '$lib/components/TagChip.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import { goto } from '$app/navigation';
+	import { untrack } from 'svelte';
 	let { data } = $props();
 	const recipeId = $derived(data.recipe.id);
-	const r = data.recipe;
+	const r = untrack(() => data.recipe);
 
 	let title = $state(r.title ?? '');
 	let description = $state(r.description ?? '');
@@ -91,21 +92,21 @@
 	<div class="bg-white dark:bg-stone-800 rounded-3xl shadow-md p-5 space-y-4">
 		<h2 class="font-baloo font-bold text-lg text-stone-900 dark:text-stone-100">Grundinfo</h2>
 		<div>
-			<label class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Titel *</label>
-			<input bind:value={title} type="text" placeholder="Spaghetti Bolognese" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
+			<label for="recipe-title" class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Titel *</label>
+			<input id="recipe-title" bind:value={title} type="text" placeholder="Spaghetti Bolognese" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
 		</div>
 		<div>
-			<label class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Beschreibung</label>
-			<textarea bind:value={description} rows="2" placeholder="Kurze Beschreibung…" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500 resize-none"></textarea>
+			<label for="recipe-description" class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Beschreibung</label>
+			<textarea id="recipe-description" bind:value={description} rows="2" placeholder="Kurze Beschreibung…" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500 resize-none"></textarea>
 		</div>
 		<div class="grid grid-cols-2 gap-3">
 			<div>
-				<label class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Portionen</label>
-				<input bind:value={servings} type="number" min="1" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
+				<label for="recipe-servings" class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">Portionen</label>
+				<input id="recipe-servings" bind:value={servings} type="number" min="1" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
 			</div>
 			<div>
-				<label class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">⏱️ Zeit (Min)</label>
-				<input bind:value={prepTime} type="number" min="1" placeholder="30" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
+				<label for="recipe-preptime" class="block text-sm font-semibold text-stone-600 dark:text-stone-400 mb-1.5 font-nunito">⏱️ Zeit (Min)</label>
+				<input id="recipe-preptime" bind:value={prepTime} type="number" min="1" placeholder="30" class="w-full px-4 py-2.5 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500" />
 			</div>
 		</div>
 	</div>
@@ -130,8 +131,9 @@
 		<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
 			{#each [['calories', '🔥 kcal', calories], ['fat', '🫒 Fett g', fat], ['sugar', '🍬 Zucker g', sugar], ['protein', '💪 Protein g', protein]] as [key, label, val]}
 				<div>
-					<label class="block text-xs font-semibold text-stone-500 dark:text-stone-400 mb-1 font-nunito">{label}</label>
+					<label for="nutrition-{key}" class="block text-xs font-semibold text-stone-500 dark:text-stone-400 mb-1 font-nunito">{label}</label>
 					<input
+						id="nutrition-{key}"
 						type="number" min="0"
 						value={val}
 						oninput={(e) => {

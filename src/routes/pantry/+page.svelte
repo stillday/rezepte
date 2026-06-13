@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { addToast } from '$lib/stores/toast.svelte';
+	import { untrack } from 'svelte';
 
 	let { data } = $props();
 
@@ -10,7 +11,8 @@
 		category: Category;
 	}
 
-	let items = $state<PantryItem[]>(data.items.length ? [...data.items] : []);
+	// Einmalige Übernahme der geladenen Items in editierbaren State (untrack = nur Initialwert).
+	let items = $state<PantryItem[]>(untrack(() => (data.items.length ? [...data.items] : [])));
 	let newName = $state('');
 	let newCategory = $state<Category>('basic');
 	let saving = $state(false);

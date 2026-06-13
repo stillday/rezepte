@@ -16,7 +16,7 @@
 		lowsugar: { classes: 'bg-teal-100 text-teal-700', icon: '🍃', label: 'Wenig Zucker' }
 	};
 
-	const config = tagConfig[tag] ?? { classes: 'bg-stone-100 text-stone-600', icon: '🏷️', label: tag };
+	const config = $derived(tagConfig[tag] ?? { classes: 'bg-stone-100 text-stone-600', icon: '🏷️', label: tag });
 </script>
 
 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold font-nunito transition-all duration-150 {config.classes}">

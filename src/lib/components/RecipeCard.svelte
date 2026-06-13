@@ -22,7 +22,7 @@
 	const { id, title, description, prepTime, tags = [], nutrition, imageUrl, index = 0 }: Props = $props();
 
 	const staggerClasses = ['recipe-stagger-1', 'recipe-stagger-2', 'recipe-stagger-3', 'recipe-stagger-4', 'recipe-stagger-5', 'recipe-stagger-6'];
-	const staggerClass = staggerClasses[index % 6];
+	const staggerClass = $derived(staggerClasses[index % 6]);
 </script>
 
 <a

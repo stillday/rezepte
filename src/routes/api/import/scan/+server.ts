@@ -1,4 +1,4 @@
-import { json, error } from '@sveltejs/kit';
+import { json, error, isHttpError } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getGeminiModel, SCAN_PROMPT, parseRecipeJson } from '$lib/server/gemini';
 
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async (event) => {
 		]);
 		return json(parseRecipeJson(result.response.text()));
 	} catch (e) {
-		if (e && typeof e === 'object' && 'status' in e) throw e;
+		if (isHttpError(e)) throw e;
 		throw error(502, 'KI-Analyse fehlgeschlagen — bitte erneut versuchen');
 	}
 };
