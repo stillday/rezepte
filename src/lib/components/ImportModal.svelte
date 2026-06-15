@@ -14,17 +14,29 @@
 	let loading = $state(false);
 	let scanFile = $state<File | null>(null);
 
+	const SOCIAL_RE = /(^|\.)(instagram\.com|tiktok\.com)$/i;
+
+	function isSocialUrl(value: string): boolean {
+		try {
+			return SOCIAL_RE.test(new URL(value).hostname);
+		} catch {
+			return false;
+		}
+	}
+
 	async function importUrl() {
 		if (!url.trim()) return;
 		loading = true;
 		try {
-			const res = await fetch('/api/import/url', {
+			// Instagram-/TikTok-Links laufen über yt-dlp + KI (Caption), normale Seiten über JSON-LD/KI.
+			const endpoint = isSocialUrl(url.trim()) ? '/api/import/social' : '/api/import/url';
+			const res = await fetch(endpoint, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ url: url.trim() })
 			});
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.error || 'Import fehlgeschlagen');
+			if (!res.ok) throw new Error(data.message || 'Import fehlgeschlagen');
 			onimport(data);
 			onclose();
 		} catch (e) {
@@ -51,7 +63,7 @@
 				body: JSON.stringify({ imageBase64: base64, mediaType: scanFile.type })
 			});
 			const data = await res.json();
-			if (!res.ok) throw new Error(data.error || 'Scan fehlgeschlagen');
+			if (!res.ok) throw new Error(data.message || 'Scan fehlgeschlagen');
 			onimport(data);
 			onclose();
 		} catch (e) {
@@ -97,11 +109,11 @@
 			<div class="p-5">
 				{#if tab === 'url'}
 					<div class="space-y-4">
-						<p class="text-sm text-stone-500 dark:text-stone-400 font-nunito">Rezept-URL einfügen — Claude extrahiert alles automatisch.</p>
+						<p class="text-sm text-stone-500 dark:text-stone-400 font-nunito">Rezept-URL einfügen — auch Instagram-Reels & TikTok. Die KI extrahiert alles automatisch.</p>
 						<input
 							type="url"
 							bind:value={url}
-							placeholder="https://example.com/rezept…"
+							placeholder="Webseite, Instagram- oder TikTok-Link…"
 							class="w-full px-4 py-3 bg-amber-50 dark:bg-stone-700 dark:text-stone-100 dark:placeholder:text-stone-500 border border-orange-100 dark:border-stone-600 rounded-2xl text-sm font-nunito focus:outline-none focus:ring-2 focus:ring-orange-300 dark:focus:ring-orange-500"
 						/>
 						<button

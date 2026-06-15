@@ -15,14 +15,31 @@ export interface ParsedRecipe {
 	imageUrl?: string;
 }
 
+// Benannte HTML-Entities inkl. deutschsprachiger Sonderzeichen.
+const NAMED_ENTITIES: Record<string, string> = {
+	amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ',
+	auml: 'ä', ouml: 'ö', uuml: 'ü', Auml: 'Ä', Ouml: 'Ö', Uuml: 'Ü', szlig: 'ß',
+	eacute: 'é', egrave: 'è', agrave: 'à', acirc: 'â', ecirc: 'ê', ccedil: 'ç',
+	aacute: 'á', oacute: 'ó', uacute: 'ú', iacute: 'í', ntilde: 'ñ',
+	euro: '€', deg: '°', middot: '·', sup2: '²', sup3: '³',
+	frac12: '½', frac14: '¼', frac34: '¾',
+	ndash: '–', mdash: '—', hellip: '…', laquo: '«', raquo: '»', shy: ''
+};
+
+function fromCode(code: number): string {
+	if (!Number.isFinite(code) || code < 0 || code > 0x10ffff) return '';
+	try {
+		return String.fromCodePoint(code);
+	} catch {
+		return '';
+	}
+}
+
 function decodeEntities(s: string): string {
 	return s
-		.replace(/&amp;/g, '&')
-		.replace(/&lt;/g, '<')
-		.replace(/&gt;/g, '>')
-		.replace(/&quot;/g, '"')
-		.replace(/&#0?39;|&apos;|&#x27;/gi, "'")
-		.replace(/&nbsp;/g, ' ');
+		.replace(/&#x([0-9a-fA-F]+);/g, (_, h) => fromCode(parseInt(h, 16)))
+		.replace(/&#(\d+);/g, (_, d) => fromCode(parseInt(d, 10)))
+		.replace(/&([a-zA-Z][a-zA-Z0-9]*);/g, (m, name) => NAMED_ENTITIES[name] ?? m);
 }
 
 function clean(v: unknown): string {
