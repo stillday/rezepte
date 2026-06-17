@@ -14,6 +14,11 @@ services:
       BRING_PASSWORD: ${BRING_PASSWORD}
       BRING_LIST_UUID: ${BRING_LIST_UUID:-}
       ORIGIN: https://rezepte.gilneas.at
+      # Optional: Instagram-Login-Cookies. Wirkt automatisch, sobald die Datei
+      # /var/www/rezepte/cookies/instagram.txt (Netscape-Format) auf dem Host liegt.
+      YTDLP_COOKIES_FILE: /app/cookies/instagram.txt
+    volumes:
+      - /var/www/rezepte/cookies:/app/cookies:ro
     depends_on:
       mongodb:
         condition: service_healthy
