@@ -97,6 +97,32 @@ async function fetchPostInfo(url: string): Promise<YtDlpInfo> {
 	return info;
 }
 
+// Instagram über angemeldete instagrapi-Session (Python-Helfer) — nur wenn Credentials gesetzt sind.
+function fetchViaInstagrapi(url: string): Promise<YtDlpInfo> {
+	return new Promise((resolve, reject) => {
+		const py = env.IG_PYTHON || '/opt/ytdlp/bin/python';
+		const script = env.IG_FETCH_SCRIPT || 'scripts/ig_fetch.py';
+		// Credentials explizit an den Subprozess geben (SvelteKit-$env landet nicht garantiert in process.env).
+		const childEnv = {
+			...process.env,
+			IG_USERNAME: env.IG_USERNAME ?? '',
+			IG_PASSWORD: env.IG_PASSWORD ?? '',
+			IG_TOTP_SECRET: env.IG_TOTP_SECRET ?? '',
+			IG_SESSION_DIR: env.IG_SESSION_DIR ?? '/app/cookies'
+		};
+		execFile(py, [script, url], { timeout: 35_000, maxBuffer: 8 * 1024 * 1024, env: childEnv }, (err, stdout) => {
+			if (!stdout) return reject(new YtDlpError(err ? String(err) : 'instagrapi: keine Ausgabe'));
+			try {
+				const data = JSON.parse(stdout);
+				if (data.error) return reject(new YtDlpError(data.error));
+				resolve(data as YtDlpInfo);
+			} catch {
+				reject(new YtDlpError('instagrapi: kein gültiges JSON'));
+			}
+		});
+	});
+}
+
 export const POST: RequestHandler = async (event) => {
 	const session = await event.locals.auth();
 	if (!session?.user?.id) throw error(401, 'Unauthorized');
@@ -114,11 +140,20 @@ export const POST: RequestHandler = async (event) => {
 		throw error(400, 'Nur Instagram- oder TikTok-Links erlaubt');
 	}
 
+	// Instagram mit hinterlegten Login-Credentials → angemeldete Session (instagrapi).
+	// Sonst (TikTok, oder IG ohne Credentials) → yt-dlp (nutzt optional die Cookie-Datei).
+	const isInstagram = u.hostname === 'instagram.com' || u.hostname.endsWith('.instagram.com');
+	const useInstagrapi = isInstagram && !!env.IG_USERNAME && !!env.IG_PASSWORD;
+
 	let info: YtDlpInfo;
 	try {
-		info = await fetchPostInfo(u.toString());
+		info = useInstagrapi ? await fetchViaInstagrapi(u.toString()) : await fetchPostInfo(u.toString());
 	} catch (e) {
 		if (isHttpError(e)) throw e; // gezielte Meldung aus fetchPostInfo durchreichen
+		const detail = e instanceof YtDlpError ? e.stderr : '';
+		if (useInstagrapi) {
+			throw error(502, `Instagram-Abruf über den hinterlegten Account fehlgeschlagen${detail ? ` (${detail})` : ''}. Session evtl. abgelaufen — bitte später erneut versuchen oder Session neu bootstrappen.`);
+		}
 		throw error(502, 'Instagram/TikTok hat den Abruf gerade abgelehnt — bitte in ein paar Sekunden noch einmal versuchen.');
 	}
 

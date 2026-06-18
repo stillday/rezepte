@@ -58,6 +58,9 @@ jobs:
             BRING_EMAIL=${{ secrets.BRING_EMAIL }}
             BRING_PASSWORD=${{ secrets.BRING_PASSWORD }}
             BRING_LIST_UUID=${{ secrets.BRING_LIST_UUID }}
+            IG_USERNAME=${{ secrets.IG_USERNAME }}
+            IG_PASSWORD=${{ secrets.IG_PASSWORD }}
+            IG_TOTP_SECRET=${{ secrets.IG_TOTP_SECRET }}
             ENVEOF
             docker pull ghcr.io/stillday/rezepte:latest
             docker compose up -d --no-build

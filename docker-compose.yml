@@ -14,11 +14,16 @@ services:
       BRING_PASSWORD: ${BRING_PASSWORD}
       BRING_LIST_UUID: ${BRING_LIST_UUID:-}
       ORIGIN: https://rezepte.gilneas.at
-      # Optional: Instagram-Login-Cookies. Wirkt automatisch, sobald die Datei
-      # /var/www/rezepte/cookies/instagram.txt (Netscape-Format) auf dem Host liegt.
+      # Instagram-Import: angemeldete Session via instaloader (Wegwerf-Account empfohlen).
+      # Session-/Cookie-Dateien liegen im gemounteten Verzeichnis (rw, persistiert).
+      IG_USERNAME: ${IG_USERNAME:-}
+      IG_PASSWORD: ${IG_PASSWORD:-}
+      IG_TOTP_SECRET: ${IG_TOTP_SECRET:-}
+      IG_SESSION_DIR: /app/cookies
+      # Fallback: yt-dlp nutzt diese Cookie-Datei, falls vorhanden.
       YTDLP_COOKIES_FILE: /app/cookies/instagram.txt
     volumes:
-      - /var/www/rezepte/cookies:/app/cookies:ro
+      - /var/www/rezepte/cookies:/app/cookies
     depends_on:
       mongodb:
         condition: service_healthy

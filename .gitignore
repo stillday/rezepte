@@ -5,3 +5,7 @@ node_modules/
 .svelte-kit/
 build/
 dist/
+
+# Python
+__pycache__/
+*.pyc
