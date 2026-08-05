@@ -46,21 +46,48 @@
 		}
 	}
 
+	const SCAN_MAX_DIMENSION = 2000;
+	const SCAN_JPEG_QUALITY = 0.85;
+
+	// Handyfotos sind oft 5-15 MB (Server-Limit: 6 MB) — vor dem Upload verkleinern,
+	// damit normale Kamerafotos nicht mit "Bild zu groß" abgewiesen werden.
+	async function resizeImageToBase64(file: File): Promise<{ base64: string; mediaType: string }> {
+		const dataUrl = await new Promise<string>((resolve, reject) => {
+			const reader = new FileReader();
+			reader.onload = () => resolve(reader.result as string);
+			reader.onerror = reject;
+			reader.readAsDataURL(file);
+		});
+
+		const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+			const el = new Image();
+			el.onload = () => resolve(el);
+			el.onerror = reject;
+			el.src = dataUrl;
+		});
+
+		const scale = Math.min(1, SCAN_MAX_DIMENSION / Math.max(img.width, img.height));
+		const canvas = document.createElement('canvas');
+		canvas.width = Math.round(img.width * scale);
+		canvas.height = Math.round(img.height * scale);
+		const ctx = canvas.getContext('2d');
+		if (!ctx) throw new Error('Canvas nicht verfügbar');
+		ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+		const resizedDataUrl = canvas.toDataURL('image/jpeg', SCAN_JPEG_QUALITY);
+		return { base64: resizedDataUrl.split(',')[1], mediaType: 'image/jpeg' };
+	}
+
 	async function importScan() {
 		if (!scanFile) return;
 		loading = true;
 		try {
-			const reader = new FileReader();
-			const base64 = await new Promise<string>((resolve, reject) => {
-				reader.onload = () => resolve((reader.result as string).split(',')[1]);
-				reader.onerror = reject;
-				reader.readAsDataURL(scanFile!);
-			});
+			const { base64, mediaType } = await resizeImageToBase64(scanFile);
 
 			const res = await fetch('/api/import/scan', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ imageBase64: base64, mediaType: scanFile.type })
+				body: JSON.stringify({ imageBase64: base64, mediaType })
 			});
 			const data = await res.json();
 			if (!res.ok) throw new Error(data.message || 'Scan fehlgeschlagen');
