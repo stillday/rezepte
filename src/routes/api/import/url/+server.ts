@@ -6,18 +6,7 @@ import net from 'node:net';
 import { fetch as undiciFetch, Agent, buildConnector } from 'undici';
 import { getGeminiModel, URL_PROMPT, parseRecipeJson } from '$lib/server/gemini';
 import { extractJsonLdRecipe } from '$lib/server/recipeJsonLd';
-
-function isPrivateIp(ip: string): boolean {
-	// IPv4-mapped IPv6 (::ffff:127.0.0.1) auf die v4-Adresse reduzieren
-	const v4 = ip.replace(/^::ffff:/i, '');
-	if (!net.isIP(v4)) return true;
-	return (
-		/^(127\.|10\.|169\.254\.|0\.)/.test(v4) ||
-		/^172\.(1[6-9]|2\d|3[0-1])\./.test(v4) ||
-		/^192\.168\./.test(v4) ||
-		/^(::1$|fc|fd|fe80|::$)/i.test(v4)
-	);
-}
+import { isPrivateIp } from '$lib/server/ssrf';
 
 // Schneller Pre-Check: Protokoll/Port + offensichtlich interne Ziele mit klarer Fehlermeldung ablehnen.
 async function validatePublicUrl(rawUrl: string): Promise<string> {
