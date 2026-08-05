@@ -3,7 +3,7 @@ services:
     image: ghcr.io/stillday/rezepte:latest
     container_name: rezepte-app
     ports:
-      - "3006:3000"
+      - "127.0.0.1:3006:3000"
     environment:
       MONGO_URI: mongodb://root:${MONGO_PASSWORD}@mongodb:27017/rezepte?authSource=admin
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
