@@ -2,13 +2,13 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { authHandle } from './auth';
 import { redirect, error, type Handle } from '@sveltejs/kit';
 
-const importRateLimits = new Map<string, { count: number; reset: number }>();
+const rateLimits = new Map<string, { count: number; reset: number }>();
 
-function checkRateLimit(userId: string, limit: number, windowMs: number): boolean {
+function checkRateLimit(key: string, limit: number, windowMs: number): boolean {
 	const now = Date.now();
-	const bucket = importRateLimits.get(userId);
+	const bucket = rateLimits.get(key);
 	if (!bucket || bucket.reset < now) {
-		importRateLimits.set(userId, { count: 1, reset: now + windowMs });
+		rateLimits.set(key, { count: 1, reset: now + windowMs });
 		return true;
 	}
 	if (bucket.count >= limit) return false;
@@ -34,8 +34,16 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	}
 
 	if (path.startsWith('/api/import/') && session.user?.id) {
-		if (!checkRateLimit(session.user.id, 10, 60_000)) {
+		if (!checkRateLimit(`import:${session.user.id}`, 10, 60_000)) {
 			throw error(429, 'Zu viele Anfragen — bitte warte eine Minute');
+		}
+	}
+
+	// Begrenzt Versuche, Einladungscodes zu erraten (Code selbst ist mit 192 Bit Entropie
+	// bereits robust, aber Defense-in-Depth gegen einen eingeloggten Angreifer).
+	if (path === '/api/household/join' && session.user?.id) {
+		if (!checkRateLimit(`household-join:${session.user.id}`, 10, 5 * 60_000)) {
+			throw error(429, 'Zu viele Versuche — bitte in ein paar Minuten erneut versuchen');
 		}
 	}
 

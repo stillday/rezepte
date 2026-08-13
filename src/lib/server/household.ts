@@ -7,7 +7,9 @@ import { Pantry } from './models/Pantry';
 import clientPromise from './mongoClient';
 
 function generateInviteCode(): string {
-	return randomBytes(6).toString('base64url');
+	// 24 Bytes (192 Bit) statt eines kurzen Codes — der Join-Endpoint erfordert zwar bereits
+	// Login, soll aber auch gegen einen eingeloggten Angreifer, der Codes durchprobiert, robust sein.
+	return randomBytes(24).toString('base64url');
 }
 
 // Legt für einen neuen Nutzer einen eigenen (Solo-)Haushalt an und übernimmt dabei
