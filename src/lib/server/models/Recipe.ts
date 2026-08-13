@@ -14,6 +14,9 @@ const NutritionSchema = new mongoose.Schema({
 }, { _id: false });
 
 const RecipeSchema = new mongoose.Schema({
+	// Zugriff läuft über householdId (geteilter Rezeptpool) — userId bleibt als Attribution erhalten,
+	// wer das Rezept ursprünglich angelegt hat.
+	householdId: { type: String, required: true, index: true },
 	userId: { type: String, required: true, index: true },
 	title: { type: String, required: true },
 	description: { type: String, default: '' },

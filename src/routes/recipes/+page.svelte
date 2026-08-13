@@ -13,7 +13,11 @@
 
 	const filtered = $derived(
 		data.recipes.filter((r) => {
-			const matchSearch = !search || r.title.toLowerCase().includes(search.toLowerCase());
+			const q = search.toLowerCase();
+			const matchSearch =
+				!q ||
+				r.title.toLowerCase().includes(q) ||
+				r.ingredients?.some((i: { name: string }) => i.name.toLowerCase().includes(q));
 			const matchTags = activeTags.length === 0 || activeTags.every((t) => r.tags?.includes(t));
 			const matchCal = !maxCalories || !r.nutrition?.calories || r.nutrition.calories <= maxCalories;
 			return matchSearch && matchTags && matchCal;

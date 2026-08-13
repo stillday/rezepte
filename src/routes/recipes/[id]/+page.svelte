@@ -4,9 +4,16 @@
 	import BringButton from '$lib/components/BringButton.svelte';
 	import { addToast } from '$lib/stores/toast.svelte';
 	import { goto } from '$app/navigation';
+	import { scaleAmount } from '$lib/scaleAmount';
 
 	let { data } = $props();
 	const r = $derived(data.recipe);
+
+	let scaledServings = $state(4);
+	$effect(() => {
+		scaledServings = r.servings || 4;
+	});
+	const ratio = $derived(r.servings ? scaledServings / r.servings : 1);
 
 	async function deleteRecipe() {
 		if (!confirm('Rezept wirklich löschen?')) return;
@@ -60,7 +67,16 @@
 					<span class="flex items-center gap-1">⏱️ {r.prepTime} Minuten</span>
 				{/if}
 				{#if r.servings}
-					<span class="flex items-center gap-1">👥 {r.servings} Portionen</span>
+					<span class="flex items-center gap-1">
+						👥
+						<button onclick={() => (scaledServings = Math.max(1, scaledServings - 1))} class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-orange-100 dark:hover:bg-stone-700 cursor-pointer" aria-label="weniger Portionen">−</button>
+						<span class="font-baloo font-bold w-4 text-center">{scaledServings}</span>
+						<button onclick={() => scaledServings++} class="w-6 h-6 flex items-center justify-center rounded-full hover:bg-orange-100 dark:hover:bg-stone-700 cursor-pointer" aria-label="mehr Portionen">+</button>
+						Portionen
+						{#if scaledServings !== r.servings}
+							<button onclick={() => (scaledServings = r.servings)} class="text-xs text-orange-500 hover:text-orange-600 underline cursor-pointer">zurücksetzen</button>
+						{/if}
+					</span>
 				{/if}
 				{#if r.sourceUrl?.startsWith('http')}
 					<a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" class="flex items-center gap-1 text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300">
@@ -99,14 +115,14 @@
 					<li class="flex items-center gap-3 py-1.5 border-b border-stone-50 dark:border-stone-700 last:border-0">
 						<span class="w-2 h-2 rounded-full bg-orange-400 shrink-0"></span>
 						<span class="font-nunito text-stone-700 dark:text-stone-300">
-							{#if ing.amount}<strong>{ing.amount} {ing.unit ?? ''}</strong>{' '}{/if}{ing.name}
+							{#if ing.amount}<strong>{scaleAmount(ing.amount, ratio)} {ing.unit ?? ''}</strong>{' '}{/if}{ing.name}
 						</span>
 					</li>
 				{/each}
 			</ul>
 
 			<div class="mt-5">
-				<BringButton recipeId={r.id} />
+				<BringButton recipeId={r.id} servings={scaledServings} />
 			</div>
 		</div>
 	{/if}

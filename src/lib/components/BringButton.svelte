@@ -3,9 +3,10 @@
 
 	interface Props {
 		recipeId: string;
+		servings?: number;
 	}
 
-	const { recipeId }: Props = $props();
+	const { recipeId, servings }: Props = $props();
 
 	let loading = $state(false);
 	let bouncing = $state(false);
@@ -16,7 +17,7 @@
 			const res = await fetch('/api/bring', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ recipeId })
+				body: JSON.stringify({ recipeId, servings })
 			});
 
 			const data = await res.json();

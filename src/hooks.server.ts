@@ -21,6 +21,8 @@ const authGuard: Handle = async ({ event, resolve }) => {
 	const isProtected =
 		path.startsWith('/recipes') ||
 		path.startsWith('/pantry') ||
+		path.startsWith('/household') ||
+		path.startsWith('/planner') ||
 		(path.startsWith('/api/') && !path.startsWith('/api/auth'));
 
 	if (!isProtected) return resolve(event);

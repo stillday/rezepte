@@ -154,7 +154,7 @@
 
 				{:else if tab === 'scan'}
 					<div class="space-y-4">
-						<p class="text-sm text-stone-500 dark:text-stone-400 font-nunito">Foto deines Kochbuchs — Claude liest das Rezept heraus.</p>
+						<p class="text-sm text-stone-500 dark:text-stone-400 font-nunito">Foto deines Kochbuchs — die KI liest das Rezept heraus.</p>
 						<label class="block w-full cursor-pointer">
 							<input
 								type="file"

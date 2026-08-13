@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { connectMongoose } from '$lib/server/mongoose';
 import { Recipe } from '$lib/server/models/Recipe';
+import { resolveHouseholdId } from '$lib/server/household';
 import mongoose from 'mongoose';
 
 const ALLOWED_FIELDS = ['title', 'description', 'servings', 'prepTime', 'ingredients', 'steps', 'tags', 'nutrition', 'sourceUrl', 'imageUrl'] as const;
@@ -31,7 +32,8 @@ export const GET: RequestHandler = async (event) => {
 
 	await connectMongoose();
 	try {
-		const recipes = await Recipe.find({ userId: session.user.id })
+		const householdId = await resolveHouseholdId(session.user.id, session.user.name);
+		const recipes = await Recipe.find({ householdId })
 			.sort({ createdAt: -1 })
 			.lean();
 		return json(recipes.map((r) => ({ ...r, id: r._id.toString(), _id: undefined })));
@@ -48,7 +50,8 @@ export const POST: RequestHandler = async (event) => {
 	await connectMongoose();
 
 	try {
-		const recipe = await Recipe.create({ ...pickAllowed(body), userId: session.user.id });
+		const householdId = await resolveHouseholdId(session.user.id, session.user.name);
+		const recipe = await Recipe.create({ ...pickAllowed(body), householdId, userId: session.user.id });
 		return json({ id: recipe._id.toString() }, { status: 201 });
 	} catch (e) {
 		if (e instanceof mongoose.Error.ValidationError) throw error(400, 'Ungültige Rezeptdaten');

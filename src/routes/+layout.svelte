@@ -20,8 +20,10 @@
 					🍳 Rezepte
 				</a>
 				<div class="flex items-center gap-4">
-					<a href="/recipes" class="text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">Meine Rezepte</a>
+					<a href="/recipes" class="text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">Rezepte</a>
+					<a href="/planner" class="text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">Planer</a>
 					<a href="/pantry" class="text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">Vorrat</a>
+					<a href="/household" class="text-sm font-semibold text-stone-600 dark:text-stone-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors">Haushalt</a>
 					<button
 						onclick={() => theme.toggle()}
 						aria-label={theme.dark ? 'Light Mode aktivieren' : 'Dark Mode aktivieren'}

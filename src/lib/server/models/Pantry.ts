@@ -10,7 +10,8 @@ const PantryItemSchema = new mongoose.Schema({
 }, { _id: false });
 
 const PantrySchema = new mongoose.Schema({
-	userId: { type: String, required: true, unique: true },
+	// Ein gemeinsamer Vorrat pro Haushalt (nicht mehr pro Nutzer).
+	householdId: { type: String, required: true, unique: true },
 	items: { type: [PantryItemSchema], default: [] }
 }, { timestamps: true });
 

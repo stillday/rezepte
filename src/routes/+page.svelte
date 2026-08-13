@@ -40,6 +40,6 @@
 			</button>
 		</form>
 
-		<p class="mt-4 text-xs text-stone-400 dark:text-stone-500 font-nunito">Jeder Benutzer sieht nur seine eigenen Rezepte.</p>
+		<p class="mt-4 text-xs text-stone-400 dark:text-stone-500 font-nunito">Nach der Anmeldung kannst du deinen Haushalt per Link mit der Familie teilen.</p>
 	</div>
 {/if}

@@ -2,6 +2,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { connectMongoose } from '$lib/server/mongoose';
 import { Recipe } from '$lib/server/models/Recipe';
+import { resolveHouseholdId } from '$lib/server/household';
 import mongoose, { isValidObjectId } from 'mongoose';
 
 const ALLOWED_FIELDS = ['title', 'description', 'servings', 'prepTime', 'ingredients', 'steps', 'tags', 'nutrition', 'sourceUrl', 'imageUrl'] as const;
@@ -32,7 +33,8 @@ export const GET: RequestHandler = async (event) => {
 
 	await connectMongoose();
 	try {
-		const recipe = await Recipe.findOne({ _id: event.params.id, userId: session.user.id }).lean();
+		const householdId = await resolveHouseholdId(session.user.id, session.user.name);
+		const recipe = await Recipe.findOne({ _id: event.params.id, householdId }).lean();
 		if (!recipe) throw error(404, 'Nicht gefunden');
 		return json({ ...recipe, id: recipe._id.toString(), _id: undefined });
 	} catch (e) {
@@ -50,8 +52,9 @@ export const PUT: RequestHandler = async (event) => {
 	await connectMongoose();
 
 	try {
+		const householdId = await resolveHouseholdId(session.user.id, session.user.name);
 		const recipe = await Recipe.findOneAndUpdate(
-			{ _id: event.params.id, userId: session.user.id },
+			{ _id: event.params.id, householdId },
 			{ $set: pickAllowed(body) },
 			{ new: true }
 		).lean();
@@ -70,7 +73,8 @@ export const DELETE: RequestHandler = async (event) => {
 
 	await connectMongoose();
 	try {
-		const result = await Recipe.deleteOne({ _id: event.params.id, userId: session.user.id });
+		const householdId = await resolveHouseholdId(session.user.id, session.user.name);
+		const result = await Recipe.deleteOne({ _id: event.params.id, householdId });
 		if (result.deletedCount === 0) throw error(404, 'Nicht gefunden');
 		return json({ ok: true });
 	} catch (e) {
